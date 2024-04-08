@@ -36,15 +36,18 @@ Assume that workers process files at different speeds. Given this, design your w
 ------------------------------------------------------------------------------------------------------
 ```
 
-Approaches:
+**Approaches**:
 * A series of scatter-gather operations. Where a job splits work into multiple tasks and then waits for all of them to finish. This ensures correctness without maintaining additional metadata as no file is processed by more than one task.
 
-* One thing to note is that average operation can be performed at the end. We can let the workers compute partial sum. A job can be split into multiple tasks where each task can be picke up by a worker and acted upon to compute the worker level partial sum. Once all the partial sums are complete we can do a gather on all of them.
-    * How to know if all the partial sums are complete? If we have considered each input file exactly one time then we are good. 
-    * Have a completion marker in the task queue. When all the file processing tasks have been consumed any worker that picks up this marker will check if we are ready to perform the final operation. In case, the partial sums are not ready due to some slower worker, we can requeue the marker operation.
+* One thing to note is that average operation can be performed at the end if we have the sum of all vectors.
+    *  We can let the workers compute partial sum for the vectors (files) assigned to them.
+    * A job can be split into multiple tasks where each task can be picked up by a worker and acted upon to compute the worker level partial sum. Once all the partial sums are complete we can do a gather on all of them.
+    * How to know if all the partial sums are complete?
+        * If we have considered each input file exactly one time then we are good. 
+        * Have a completion marker in the task queue. When all the file processing tasks have been consumed any worker that picks up this marker will check if we are ready to perform the final operation. In case, the partial sums are not ready due to some slower worker, we can requeue the marker.
 
 
-Setup:
+**Setup**:
 ```
 pip3 install -r requirements.txt
 python3 main.py
