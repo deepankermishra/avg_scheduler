@@ -1,8 +1,8 @@
 import threading
 import os
-from impl.utils import get_csv_files
+from impl.utils import get_csv_file_paths
 from impl.schd import scheduler
-from impl.job.job import Job
+from impl.processor.base_job import Job
 
 def main():
     print("Starting scheduler service")
@@ -12,12 +12,15 @@ def main():
 
     # Add work to the scheduler.
     
-    relative_path = './data/input_1'
-    input_dir =  os.path.abspath(relative_path)
-    num_files = len(get_csv_files(input_dir))
+    relative_input_path = './data/input_1'
+    relative_output_path = './data/input_1/output'
+    input_dir =  os.path.abspath(relative_input_path)
+    output_dir = os.path.abspath(relative_output_path)
+
+    num_files = len(get_csv_file_paths(input_dir))
     cardinality = 3
     num_workers = 2
-    job = Job("test_job_1", num_workers, num_files, cardinality, input_dir)
+    job = Job("test_job_1", num_workers, num_files, cardinality, input_dir, output_dir)
     print(f'Adding job {job}')
     scheduler.add_job(job)
 

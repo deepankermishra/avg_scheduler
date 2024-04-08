@@ -2,7 +2,8 @@ import threading
 from time import sleep
 from impl.consts import Status
 
-
+# This is a simple scheduler that runs jobs in a loop.
+# Jobs are submitted by users.
 class Scheduler:
     def __init__(self):
         # In memory state. Could be maintained in a database.
