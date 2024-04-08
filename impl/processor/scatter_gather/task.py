@@ -30,8 +30,7 @@ class Task:
         for file in self.input_files[1:]:
             df = pd.read_csv(file, header=None)
             print(f'Processing file {file} with df {df}')
-            result += df        
-        
+            result += df
         
         if self.operation == Operation.AVG:
             result = result / self.total_files

@@ -1,7 +1,7 @@
 import os
 from concurrent.futures import as_completed
 
-from impl.processor.base_job import Job
+from impl.processor.job import Job
 from impl.processor.scatter_gather.task import Task
 from impl.utils import get_csv_file_paths
 from impl.consts import Operation, Status, BATCH_SIZE, global_thread_pool
@@ -11,15 +11,18 @@ from impl.consts import Operation, Status, BATCH_SIZE, global_thread_pool
 # The files are divided into batches and put on a task queue.
 class ScatterGatherJob(Job):
 
-    def __init__(self, id, num_workers, num_files, cardinality, files_dir):
-        super().__init__(id, num_workers, num_files, cardinality, files_dir)
+    def __init__(self, id, num_workers, num_files, cardinality, input_dir, output_dir=None):
+        super().__init__(id, num_workers, num_files, cardinality, input_dir, output_dir)
+        self.level = 0
+        self.is_last_op = False
 
-    def scatter_gather(self):
+    def run(self):
         input_dir = self.input_dir
         execution_level = self.level
         num_files = self.num_files
+        total_files = self.num_files
 
-        while not self.is_last_op:
+        while 1:
             # SCATTER PHASE #
             # Read all the file paths from the files_dir.
             # This is a metadata operation. Does not actually load the files.
@@ -45,7 +48,7 @@ class ScatterGatherJob(Job):
                 operation = Operation.AVG if self.is_last_op else Operation.SUM
                 print(f'Creating task for batch {idx} with operation {operation}')
                 task = Task(self.id, execution_level, file_path_batch, output_dir,
-                            num_files, operation=operation)
+                            total_files, operation=operation)
 
                 future = global_thread_pool.submit(task.run)
                 futures.append(future)
@@ -57,13 +60,18 @@ class ScatterGatherJob(Job):
             for future in as_completed(futures):
                 future.result()
 
+            if self.is_last_op:
+                break
+
             # This can be done as after a gather phase we have all the results from previous level.
             # Execute next level of the operation hierarchy.
             execution_level = execution_level + 1
-            num_files = len(file_path_batches)
-            self.is_last_op = num_files == 1
+            num_batches = len(file_path_batches)
             input_dir = output_dir
-            print(f'Execute the next level: {execution_level}, files: {num_files}')
+            
+            # Last batch.
+            self.is_last_op = num_batches == 1
+            print(f'Execute the next level: {execution_level}, files: {num_batches}')
             
         self.status = Status.COMPLETE
         print(f'Job {self.id} completed')

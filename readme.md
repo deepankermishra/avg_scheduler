@@ -42,3 +42,10 @@ Approaches:
 * One thing to note is that average operation can be performed at the end. We can let the workers compute partial sum. A job can be split into multiple tasks where each task can be picke up by a worker and acted upon to compute the worker level partial sum. Once all the partial sums are complete we can do a gather on all of them.
     * How to know if all the partial sums are complete? If we have considered each input file exactly one time then we are good. 
     * Have a completion marker in the task queue. When all the file processing tasks have been consumed any worker that picks up this marker will check if we are ready to perform the final operation. In case, the partial sums are not ready due to some slower worker, we can requeue the marker operation.
+
+
+Setup:
+```
+pip3 install -r requirements.txt
+python3 main.py
+```

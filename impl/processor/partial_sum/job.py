@@ -1,15 +1,17 @@
-from impl.processor.base_job import Job
+from impl.processor.job import Job
 from impl.processor.partial_sum.db import TaskMetadata, task_queue, jobs_state
 from impl.utils import get_csv_file_paths
+from impl.consts import Status
 
 # Files are simply queued in as work units.
 # A fixed number of workers are listening for events on this queue.
 # They pick up work as soon as it is available and update their partial sum.
-class PartialSums(Job):
-    def __init__(self, id, num_workers, num_files, cardinality, files_dir):
-        super().__init__(id, num_workers, num_files, cardinality, files_dir)
+class PartialSum(Job):
+    def __init__(self, id, num_workers, num_files, cardinality, input_dir, output_dir=None):
+        super().__init__(id, num_workers, num_files, cardinality, input_dir, output_dir)
 
-    def partial_sum(self):
+    def run(self):
+        self.status = Status.RUNNING
         jobs_state[self.id] = self
         file_paths = get_csv_file_paths(self.input_dir)
         if len(file_paths) == 0:
@@ -17,10 +19,11 @@ class PartialSums(Job):
             return
         # Put work for each file on the task queue.
         for file_path in file_paths:
-            task_queue.put(TaskMetadata(self.id, file_path), True) # Block till a free slot is available in the queue.
+            print(f'Adding task for file {file_path}')
+            task_queue.put(TaskMetadata(self.id, file_path, task_type='partial_sum', status=Status.PENDING), True) # Block till a free slot is available in the queue.
         
         print(f'Added {len(file_paths)} tasks to the queue')
 
         # Add a completion marker task.
-        task_queue.put(TaskMetadata(self.id, None, task_type='completion'), True) # Block till a free slot is available in the queue.
+        task_queue.put(TaskMetadata(self.id, None, task_type='completion', status=Status.PENDING), True) # Block till a free slot is available in the queue.
 

@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 # Number of files a worker can process in a batch.
 # TODO: Can be made a function of number_worker input from user.
 BATCH_SIZE = os.getenv('BATCH_SIZE', 2)
-MAX_WORKERS = os.getenv('MAX_WORKERS', 2)
+MAX_WORKERS = os.getenv('MAX_WORKERS', 4)
 
 EXECUTION_LOCATION = os.getenv('EXECUTION_LOCATION', './data')
 

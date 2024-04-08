@@ -1,9 +1,10 @@
 # This file is used as an in-memory db.
 
 import queue
-import pandas as pd
-
+from dataclasses import dataclass
+from uuid import UUID
 from impl.consts import Status
+import pandas as pd
 
 # Thread safe multi-producer, multi-consumer queue.
 task_queue = queue.Queue()
@@ -14,18 +15,16 @@ workers_state = {}
 # In-memory state of the jobs.
 jobs_state = {}
 
-
+@dataclass
 class TaskMetadata:
-    def __init__(self, job_id, input_path, task_type= 'partial_sum'):
-        self.job_id = job_id
-        self.input_path = input_path
-        self.task_type = task_type
-        self.status = Status.PENDING
+    job_id: str
+    input_path: str
+    task_type: str
+    status: Status
 
-
+@dataclass
 class WorkerMetadata:
-    def __init__(self, worker_id, job_id):
-        self.worker_id = worker_id
-        self.job_id = job_id
-        self.partial_sum_df = pd.DataFrame()
-        self.files_processed = 0
+    worker_id: UUID
+    job_id: str
+    partial_sum_df: pd.DataFrame
+    files_processed: int
