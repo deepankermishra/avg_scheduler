@@ -1,9 +1,11 @@
+import uuid
 from impl.consts import Status
 
 class Job:
-    def __init__(self, id, num_workers, num_files, cardinality, input_dir, output_dir=None):
+    def __init__(self, name, num_workers, num_files, cardinality, input_dir, output_dir=None):
         # Job metadata
-        self.id = id
+        self.id = uuid.uuid4()
+        self.name = name
 
         # Job parameters
         self.num_workers = num_workers or 1
@@ -20,7 +22,7 @@ class Job:
 
 
     def __str__(self):
-        return f'Job: {self.id}, {self.num_workers}, {self.num_files}, {self.status}'
+        return f'Job: {self.name}, {self.num_workers}, {self.num_files}, {self.status}'
 
     def run(self):
         raise NotImplementedError

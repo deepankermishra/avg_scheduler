@@ -7,8 +7,8 @@ from impl.consts import Status
 # A fixed number of workers are listening for events on this queue.
 # They pick up work as soon as it is available and update their partial sum.
 class PartialSum(Job):
-    def __init__(self, id, num_workers, num_files, cardinality, input_dir, output_dir=None):
-        super().__init__(id, num_workers, num_files, cardinality, input_dir, output_dir)
+    def __init__(self, name, num_workers, num_files, cardinality, input_dir, output_dir=None):
+        super().__init__(name, num_workers, num_files, cardinality, input_dir, output_dir)
 
     def run(self):
         self.status = Status.RUNNING
@@ -26,4 +26,3 @@ class PartialSum(Job):
 
         # Add a completion marker task.
         task_queue.put(TaskMetadata(self.id, None, task_type='completion', status=Status.PENDING), True) # Block till a free slot is available in the queue.
-

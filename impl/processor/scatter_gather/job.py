@@ -11,17 +11,16 @@ from impl.consts import Operation, Status, BATCH_SIZE, global_thread_pool
 # The files are divided into batches and put on a task queue.
 class ScatterGatherJob(Job):
 
-    def __init__(self, id, num_workers, num_files, cardinality, input_dir, output_dir=None):
-        super().__init__(id, num_workers, num_files, cardinality, input_dir, output_dir)
+    def __init__(self, name, num_workers, num_files, cardinality, input_dir, output_dir=None):
+        super().__init__(name, num_workers, num_files, cardinality, input_dir, output_dir)
         self.level = 0
         self.is_last_op = False
 
     def run(self):
         input_dir = self.input_dir
         execution_level = self.level
-        num_files = self.num_files
         total_files = self.num_files
-
+        print(f'Job {self.id} started')
         while 1:
             # SCATTER PHASE #
             # Read all the file paths from the files_dir.
