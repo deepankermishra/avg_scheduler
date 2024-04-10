@@ -11,7 +11,6 @@ def start_scheduler():
     threading.Thread(target=scheduler.run).start()
     print("Scheduler listening for jobs")
 
-
 def main():
     if JOB_DISPATCH_ALGO == JOB_ALGO.SCATTER_GATHER and BATCH_SIZE < 2:
         raise ValueError('Batch size must be >= 2 for scatter-gather job dispatch algorithm')

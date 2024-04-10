@@ -47,8 +47,12 @@ Assume that workers process files at different speeds. Given this, design your w
         * Have a completion marker in the task queue. When all the file processing tasks have been consumed any worker that picks up this marker will check if we are ready to perform the final operation. In case, the partial sums are not ready due to some slower worker, we can requeue the marker.
 
 
+* Further observe, we don't need to maintain execution level details. Since any file will have sum of a given batch and each batch is mutually exclusive.
+
 **Setup**:
 ```
+python3 -m venv venv
+source venv/bin/activate
 pip3 install -r requirements.txt
 python3 main.py
 ```

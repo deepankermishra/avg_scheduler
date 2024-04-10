@@ -13,7 +13,7 @@ def create_workers():
     pass
 
 
-# Sample payload
+# Sample payloads
 # { "relative_input_path": "./data/input_2/", "relative_output_path": "./data/input_2/output", "cardinality": 3, "num_workers": 2, "id": "test_job_1" }
 # { "relative_input_path": "./data/input_1/", "relative_output_path": "./data/input_1/output", "cardinality": 3, "num_workers": 2, "id": "test_job_2" }
 # { "relative_input_path": "./data/input/", "relative_output_path": "./data/input/output", "cardinality": 3, "num_workers": 2, "id": "test_job_3" }
